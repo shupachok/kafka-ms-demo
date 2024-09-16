@@ -1,4 +1,4 @@
-package com.sp.tickets.service;
+package com.sp.core;
 
 
 import lombok.AllArgsConstructor;

@@ -1,5 +1,6 @@
 package com.sp.tickets.service;
 
+import com.sp.core.TicketCreatedEvent;
 import com.sp.tickets.rest.CreateTicketRestModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,8 +9,6 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @Service
 public class TicketServiceImpl implements TicketService {
@@ -47,7 +46,7 @@ public class TicketServiceImpl implements TicketService {
 
 //        2.sent synchronously
         LOGGER.info("Before publishing Ticket created event");
-        SendResult<String, TicketCreatedEvent> result = kafkaTemplate.send("product-created-events-topic", ticketId, ticketCreatedEvent).get();
+        SendResult<String, TicketCreatedEvent> result = kafkaTemplate.send("ticket-created-events-topic", ticketId, ticketCreatedEvent).get();
 
         LOGGER.info("Partition : {}", result.getRecordMetadata().partition());
         LOGGER.info("Topic : {}", result.getRecordMetadata().topic());
