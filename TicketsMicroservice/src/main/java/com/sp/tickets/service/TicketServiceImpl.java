@@ -2,6 +2,7 @@ package com.sp.tickets.service;
 
 import com.sp.core.TicketCreatedEvent;
 import com.sp.tickets.rest.CreateTicketRestModel;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -29,6 +30,11 @@ public class TicketServiceImpl implements TicketService {
                 createTicketRestModel.getTitle(),
                 createTicketRestModel.getPrice(),
                 createTicketRestModel.getQuantity());
+        ProducerRecord<String,TicketCreatedEvent> record = new ProducerRecord<>(
+                "ticket-created-events-topic",
+                        ticketId,
+                        ticketCreatedEvent);
+        record.headers().add("messageId",UUID.randomUUID().toString().getBytes());
 
 //      sent asynchronously
 //        CompletableFuture<SendResult<String,TicketCreatedEvent>> future = kafkaTemplate.send("ticket-created-events-topic",ticketId,ticketCreatedEvent);
@@ -45,8 +51,13 @@ public class TicketServiceImpl implements TicketService {
 //        future.join();
 
 //        2.sent synchronously
+//        LOGGER.info("Before publishing Ticket created event");
+//        SendResult<String, TicketCreatedEvent> result = kafkaTemplate.send("ticket-created-events-topic", ticketId, ticketCreatedEvent).get();
+
+//        2.1 send synchronously with message header
         LOGGER.info("Before publishing Ticket created event");
-        SendResult<String, TicketCreatedEvent> result = kafkaTemplate.send("ticket-created-events-topic", ticketId, ticketCreatedEvent).get();
+        SendResult<String, TicketCreatedEvent> result = kafkaTemplate.send(record).get();
+
 
         LOGGER.info("Partition : {}", result.getRecordMetadata().partition());
         LOGGER.info("Topic : {}", result.getRecordMetadata().topic());

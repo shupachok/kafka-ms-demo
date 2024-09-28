@@ -10,6 +10,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
@@ -21,6 +24,8 @@ import java.net.URI;
 @Component
 //    multiple topics
 //    @KafkaListener(topics = {"ticket-created-events-topic-1","ticket-created-events-topic-2"})
+//    config group id
+//    @KafkaListener(topics = "ticket-created-events-topic",groupId = "ticket-created-event")
 @KafkaListener(topics = "ticket-created-events-topic")
 public class TicketCreatedEventHandler {
 
@@ -30,10 +35,17 @@ public class TicketCreatedEventHandler {
     private RestTemplate restTemplate;
 
     @KafkaHandler
-    public void handle(TicketCreatedEvent ticketCreatedEvent){
-        LOGGER.info("Received ticket created event: " + ticketCreatedEvent.getTitle());
+    public void handle(@Payload TicketCreatedEvent ticketCreatedEvent,
+                       @Header(value = "messageId",required = true) String messageId,
+                       @Header(KafkaHeaders.RECEIVED_KEY) String messageKey){
+        LOGGER.info("""
+                    Received ticket created event title: {}
+                    messageId: {}
+                    messageKey: {}
+                    ticketId: {}"""
+                ,ticketCreatedEvent.getTitle() , messageId, messageKey, ticketCreatedEvent.getTicketId());
 
-        String emailServerUrl = "http://localhost:8083/response/500";
+        String emailServerUrl = "http://localhost:8083/response/200";
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(emailServerUrl, HttpMethod.GET, null, String.class);
