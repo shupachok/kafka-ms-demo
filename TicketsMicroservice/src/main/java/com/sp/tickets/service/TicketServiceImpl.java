@@ -34,6 +34,7 @@ public class TicketServiceImpl implements TicketService {
                 "ticket-created-events-topic",
                         ticketId,
                         ticketCreatedEvent);
+//        record.headers().add("messageId","1234".getBytes());
         record.headers().add("messageId",UUID.randomUUID().toString().getBytes());
 
 //      sent asynchronously
