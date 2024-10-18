@@ -41,7 +41,10 @@ public class KafkaConsumerConfiguration {
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
+        //config for handler when consume invalid data
+
         config.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JsonDeserializer.class);
+        //when consume valid data use JsonDeserializer.class for Deserialize
 
         config.put(JsonDeserializer.TRUSTED_PACKAGES,trustedPackage);
         config.put(ConsumerConfig.GROUP_ID_CONFIG,groupId);
