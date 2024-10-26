@@ -1,6 +1,6 @@
 package com.sp.emailnotificationmicroservice.handler;
 
-import com.sp.core.TicketCreatedEvent;
+import com.sp.core.event.TicketCreatedEvent;
 import com.sp.emailnotificationmicroservice.error.NotRetryableException;
 import com.sp.emailnotificationmicroservice.error.RetryableException;
 import com.sp.emailnotificationmicroservice.io.ProcessdEventRepository;
@@ -19,10 +19,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
 import java.util.Optional;
 
 @Component

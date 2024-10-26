@@ -1,6 +1,6 @@
 package com.sp.emailnotificationmicroservice;
 
-import com.sp.core.TicketCreatedEvent;
+import com.sp.core.event.TicketCreatedEvent;
 import com.sp.emailnotificationmicroservice.handler.TicketCreatedEventHandler;
 import com.sp.emailnotificationmicroservice.io.ProcessdEventRepository;
 import com.sp.emailnotificationmicroservice.io.ProcessedEventEntity;
@@ -8,7 +8,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +17,6 @@ import org.springframework.http.*;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 

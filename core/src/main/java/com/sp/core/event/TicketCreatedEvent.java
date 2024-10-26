@@ -1,4 +1,4 @@
-package com.sp.core;
+package com.sp.core.event;
 
 
 import lombok.AllArgsConstructor;

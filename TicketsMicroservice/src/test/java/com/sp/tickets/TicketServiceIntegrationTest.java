@@ -1,15 +1,12 @@
 package com.sp.tickets;
 
-import com.sp.core.TicketCreatedEvent;
+import com.sp.core.event.TicketCreatedEvent;
 import com.sp.tickets.rest.CreateTicketRestModel;
 import com.sp.tickets.service.TicketService;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
@@ -20,17 +17,14 @@ import org.springframework.kafka.listener.MessageListener;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
-import org.springframework.kafka.test.EmbeddedKafkaKraftBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.math.BigDecimal;
 import java.util.Map;
-import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
@@ -51,6 +45,11 @@ public class TicketServiceIntegrationTest {
     @Autowired
     private TicketService ticketService;
 
+    /*
+    Note:
+    IntelliJ IDEA is reporting errors this line (Eclipse not reporting errors)
+    but JUnit tests are still executing and passing successfully
+    */
     @Autowired
     private EmbeddedKafkaBroker embeddedKafkaBroker;
 

@@ -1,6 +1,6 @@
 package com.sp.tickets.service;
 
-import com.sp.core.TicketCreatedEvent;
+import com.sp.core.event.TicketCreatedEvent;
 import com.sp.tickets.rest.CreateTicketRestModel;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;

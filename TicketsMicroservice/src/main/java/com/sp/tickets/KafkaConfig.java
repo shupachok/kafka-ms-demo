@@ -1,6 +1,6 @@
 package com.sp.tickets;
 
-import com.sp.core.TicketCreatedEvent;
+import com.sp.core.event.TicketCreatedEvent;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.beans.factory.annotation.Value;
