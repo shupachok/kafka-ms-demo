@@ -1,6 +1,6 @@
 package com.sp.emailnotificationmicroservice;
 
-import com.sp.core.event.TicketCreatedEvent;
+import com.sp.core.dto.event.TicketCreatedEvent;
 import com.sp.emailnotificationmicroservice.handler.TicketCreatedEventHandler;
 import com.sp.emailnotificationmicroservice.io.ProcessdEventRepository;
 import com.sp.emailnotificationmicroservice.io.ProcessedEventEntity;

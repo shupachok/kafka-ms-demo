@@ -16,8 +16,8 @@ public class Ticket {
     private BigDecimal price;
     private Integer quantity;
 
-    public Ticket(UUID productId, Integer quantity) {
-        this.id = productId;
+    public Ticket(UUID ticketId, Integer quantity) {
+        this.id = ticketId;
         this.quantity = quantity;
     }
 }

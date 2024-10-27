@@ -15,9 +15,9 @@ public class CreateOrderRequest {
     @NotNull
     private UUID customerId;
     @NotNull
-    private UUID productId;
+    private UUID ticketId;
     @NotNull
     @Positive
-    private Integer productQuantity;
+    private Integer ticketQuantity;
 
 }

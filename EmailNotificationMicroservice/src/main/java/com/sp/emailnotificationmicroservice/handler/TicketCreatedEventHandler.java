@@ -1,6 +1,6 @@
 package com.sp.emailnotificationmicroservice.handler;
 
-import com.sp.core.event.TicketCreatedEvent;
+import com.sp.core.dto.event.TicketCreatedEvent;
 import com.sp.emailnotificationmicroservice.error.NotRetryableException;
 import com.sp.emailnotificationmicroservice.error.RetryableException;
 import com.sp.emailnotificationmicroservice.io.ProcessdEventRepository;

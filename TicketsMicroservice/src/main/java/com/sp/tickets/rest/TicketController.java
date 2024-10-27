@@ -15,7 +15,6 @@ import java.util.Date;
 @RestController
 @RequestMapping("/tickets")
 public class TicketController {
-
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     private TicketService ticketService;

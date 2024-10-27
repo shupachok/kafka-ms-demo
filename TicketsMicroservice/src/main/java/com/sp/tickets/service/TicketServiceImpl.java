@@ -1,10 +1,13 @@
 package com.sp.tickets.service;
 
-import com.sp.core.event.TicketCreatedEvent;
+import com.sp.core.dto.event.TicketCreatedEvent;
+import com.sp.tickets.dao.jpa.entity.TicketEntity;
+import com.sp.tickets.dao.repository.TicketRepository;
 import com.sp.tickets.rest.CreateTicketRestModel;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
@@ -13,17 +16,23 @@ import java.util.UUID;
 
 @Service
 public class TicketServiceImpl implements TicketService {
-
+    TicketRepository ticketRepository;
     KafkaTemplate<String, TicketCreatedEvent> kafkaTemplate;
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
-    public TicketServiceImpl(KafkaTemplate<String, TicketCreatedEvent> kafkaTemplate) {
+    public TicketServiceImpl(KafkaTemplate<String, TicketCreatedEvent> kafkaTemplate,
+                             TicketRepository ticketRepository) {
         this.kafkaTemplate = kafkaTemplate;
+        this.ticketRepository = ticketRepository;
     }
 
     @Override
     public String createTicket(CreateTicketRestModel createTicketRestModel) throws Exception {
-        String ticketId = UUID.randomUUID().toString();
+        TicketEntity ticketEntity = new TicketEntity();
+        BeanUtils.copyProperties(createTicketRestModel, ticketEntity);
+        ticketRepository.save(ticketEntity);
+
+        String ticketId = ticketEntity.getId().toString();
 
         // TODO:persist ticket detail into db before publish event
         TicketCreatedEvent ticketCreatedEvent = new TicketCreatedEvent(ticketId,
@@ -64,7 +73,7 @@ public class TicketServiceImpl implements TicketService {
         LOGGER.info("Topic : {}", result.getRecordMetadata().topic());
         LOGGER.info("Offset : {}", result.getRecordMetadata().offset());
 
-        LOGGER.info("### Returning product id ###");
+        LOGGER.info("### Returning ticket id ###");
 
         return ticketId;
     }
