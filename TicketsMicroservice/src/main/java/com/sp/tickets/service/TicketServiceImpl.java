@@ -1,6 +1,8 @@
 package com.sp.tickets.service;
 
+import com.sp.core.dto.Ticket;
 import com.sp.core.dto.event.TicketCreatedEvent;
+import com.sp.core.exception.TicketInsufficientQuantityException;
 import com.sp.tickets.dao.jpa.entity.TicketEntity;
 import com.sp.tickets.dao.repository.TicketRepository;
 import com.sp.tickets.rest.CreateTicketRestModel;
@@ -12,7 +14,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class TicketServiceImpl implements TicketService {
@@ -76,5 +80,35 @@ public class TicketServiceImpl implements TicketService {
         LOGGER.info("### Returning ticket id ###");
 
         return ticketId;
+    }
+
+    @Override
+    public Ticket reserve(Ticket desiredTicket, UUID orderId) {
+        TicketEntity ticketEntity = ticketRepository.findById(desiredTicket.getId()).orElseThrow();
+        if (desiredTicket.getQuantity() > ticketEntity.getQuantity()) {
+            throw new TicketInsufficientQuantityException(ticketEntity.getId(), orderId);
+        }
+
+        ticketEntity.setQuantity(ticketEntity.getQuantity() - desiredTicket.getQuantity());
+        ticketRepository.save(ticketEntity);
+
+        var reservedProduct = new Ticket();
+        BeanUtils.copyProperties(ticketEntity, reservedProduct);
+        reservedProduct.setQuantity(desiredTicket.getQuantity());
+        return reservedProduct;
+    }
+
+    @Override
+    public void cancelReservation(Ticket ticketToCancel, UUID orderId) {
+        TicketEntity ticketEntity = ticketRepository.findById(ticketToCancel.getId()).orElseThrow();
+        ticketEntity.setQuantity(ticketEntity.getQuantity() + ticketToCancel.getQuantity());
+        ticketRepository.save(ticketEntity);
+    }
+
+    @Override
+    public List<Ticket> findAll() {
+        return ticketRepository.findAll().stream()
+                .map(entity -> new Ticket(entity.getId(), entity.getTitle(), entity.getPrice(), entity.getQuantity()))
+                .collect(Collectors.toList());
     }
 }
