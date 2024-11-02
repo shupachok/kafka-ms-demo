@@ -1,4 +1,4 @@
-package com.sp.tickets;
+package com.sp.tickets.config;
 
 import com.sp.core.dto.event.TicketCreatedEvent;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -16,6 +16,9 @@ import java.util.Map;
 
 @Configuration
 public class KafkaConfig {
+
+    @Value("${tickets.events.topic.name}")
+    private String ticketEventsTopicName;
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
@@ -73,11 +76,18 @@ public class KafkaConfig {
     }
 
     @Bean
-    NewTopic createTopic(){
+    NewTopic createTicketCreatedEventsTopic(){
         return TopicBuilder.name("ticket-created-events-topic")
                 .partitions(3)
                 .replicas(3)
                 .configs(Map.of("min.insync.replicas","2"))
+                .build();
+    }
+
+    NewTopic createTicketEventTopic(){
+        return TopicBuilder.name(ticketEventsTopicName)
+                .partitions(3)
+                .replicas(3)
                 .build();
     }
 }
