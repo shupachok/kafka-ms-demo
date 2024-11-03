@@ -65,14 +65,24 @@ public class KafkaConfig {
         return config;
     }
 
+//    @Bean
+//    ProducerFactory<String, TicketCreatedEvent> producerFactory(){
+//        return new DefaultKafkaProducerFactory<>(producerConfigs());
+//    }
+//
+//    @Bean
+//    KafkaTemplate<String, TicketCreatedEvent> kafkaTemplate(){
+//        return new KafkaTemplate<String,TicketCreatedEvent>(producerFactory());
+//    }
+
     @Bean
-    ProducerFactory<String, TicketCreatedEvent> producerFactory(){
+    ProducerFactory<String, Object> producerGeneralFactory(){
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
     @Bean
-    KafkaTemplate<String, TicketCreatedEvent> kafkaTemplate(){
-        return new KafkaTemplate<String,TicketCreatedEvent>(producerFactory());
+    KafkaTemplate<String, Object> kafkaGeneralTemplate(){
+        return new KafkaTemplate<String,Object>(producerGeneralFactory());
     }
 
     @Bean

@@ -19,17 +19,25 @@ import org.springframework.stereotype.Component;
 @KafkaListener(topics = "${tickets.commands.topic.name}")
 public class TicketCommandHandler {
 
-    private final TicketService ticketService;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final KafkaTemplate<String,Object> kafkaTemplate;
-    private final String ticketEventsTopicName;
 
-    public TicketCommandHandler(TicketService ticketService, KafkaTemplate<String, Object> kafkaTemplate,
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    KafkaTemplate<String,Object> kafkaTemplate;
+    private String ticketEventsTopicName;
+    private TicketService ticketService;
+
+    public TicketCommandHandler(KafkaTemplate<String, Object> kafkaTemplate,
+                                TicketService ticketService,
                                 @Value("${tickets.events.topic.name}") String ticketEventsTopicName) {
-        this.ticketService = ticketService;
         this.kafkaTemplate = kafkaTemplate;
+        this.ticketService = ticketService;
         this.ticketEventsTopicName = ticketEventsTopicName;
     }
+//    public TicketCommandHandler(KafkaTemplate<String, Object> kafkaTemplate,TicketService ticketService,
+//                                @Value("${tickets.events.topic.name}") String ticketEventsTopicName) {
+//        this.ticketService = ticketService;
+//        this.kafkaTemplate = kafkaTemplate;
+//        this.ticketEventsTopicName = ticketEventsTopicName;
+//    }
 
     @KafkaHandler
     public void handleCommand(@Payload ReserveTicketCommand command){

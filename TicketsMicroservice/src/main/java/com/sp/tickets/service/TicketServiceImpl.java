@@ -21,10 +21,10 @@ import java.util.stream.Collectors;
 @Service
 public class TicketServiceImpl implements TicketService {
     TicketRepository ticketRepository;
-    KafkaTemplate<String, TicketCreatedEvent> kafkaTemplate;
+    KafkaTemplate<String, Object> kafkaTemplate;
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
-    public TicketServiceImpl(KafkaTemplate<String, TicketCreatedEvent> kafkaTemplate,
+    public TicketServiceImpl(KafkaTemplate<String, Object> kafkaTemplate,
                              TicketRepository ticketRepository) {
         this.kafkaTemplate = kafkaTemplate;
         this.ticketRepository = ticketRepository;
@@ -43,7 +43,7 @@ public class TicketServiceImpl implements TicketService {
                 createTicketRestModel.getTitle(),
                 createTicketRestModel.getPrice(),
                 createTicketRestModel.getQuantity());
-        ProducerRecord<String,TicketCreatedEvent> record = new ProducerRecord<>(
+        ProducerRecord<String,Object> record = new ProducerRecord<>(
                 "ticket-created-events-topic",
                         ticketId,
                         ticketCreatedEvent);
@@ -70,7 +70,7 @@ public class TicketServiceImpl implements TicketService {
 
 //        2.1 send synchronously with message header
         LOGGER.info("Before publishing Ticket created event");
-        SendResult<String, TicketCreatedEvent> result = kafkaTemplate.send(record).get();
+        SendResult<String, Object> result = kafkaTemplate.send(record).get();
 
 
         LOGGER.info("Partition : {}", result.getRecordMetadata().partition());
