@@ -94,7 +94,8 @@ public class KafkaConfig {
                 .build();
     }
 
-    NewTopic createTicketEventTopic(){
+    @Bean
+    NewTopic createTicketEventsTopic(){
         return TopicBuilder.name(ticketEventsTopicName)
                 .partitions(3)
                 .replicas(3)
