@@ -1,6 +1,7 @@
 package com.sp.ordersmicroservice.service;
 
 import com.sp.core.dto.Order;
+import com.sp.core.dto.event.OrderApprovedEvent;
 import com.sp.core.dto.event.OrderCreatedEvent;
 import com.sp.core.type.OrderStatus;
 import com.sp.ordersmicroservice.dao.jpa.entity.OrderEntity;
@@ -8,6 +9,11 @@ import com.sp.ordersmicroservice.dao.jpa.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -47,6 +53,18 @@ public class OrderServiceImpl implements OrderService {
                 entity.getTicketId(),
                 entity.getTicketQuantity(),
                 entity.getStatus());
+    }
+
+    @Override
+    public void approveOrder(UUID orderId) {
+        OrderEntity order = orderRepository.findById(orderId).get();
+        Assert.notNull(order, "Order not found");
+
+        order.setStatus(OrderStatus.APPROVED);
+        orderRepository.save(order);
+
+        OrderApprovedEvent orderApprovedEvent = new OrderApprovedEvent(orderId);
+        kafkaTemplate.send(ordersEventsTopicName,orderApprovedEvent);
     }
 
 }
