@@ -41,7 +41,7 @@ public class PaymentCommandHandler {
 
             Payment process = paymentService.process(payment);
             PaymentProcessedEvent event = new PaymentProcessedEvent(process.getOrderId(),process.getId());
-            kafkaTemplate.send(paymentEventsTopicName,process);
+            kafkaTemplate.send(paymentEventsTopicName,event);
 
         } catch (CreditCardProcessorUnavailableException e) {
             LOGGER.error(e.getLocalizedMessage(),e);
