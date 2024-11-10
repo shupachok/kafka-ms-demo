@@ -1,6 +1,7 @@
 package com.sp.ordersmicroservice.service.handler;
 
 import com.sp.core.dto.command.ApproveOrderCommand;
+import com.sp.core.dto.command.RejectOrderCommand;
 import com.sp.ordersmicroservice.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaHandler;
@@ -18,5 +19,10 @@ public class OrderCommandHandler {
     @KafkaHandler
     public void handleCommand(@Payload ApproveOrderCommand approveOrderCommand){
         orderService.approveOrder(approveOrderCommand.getOrderId());
+    }
+
+    @KafkaHandler
+    public void handleCommand(@Payload RejectOrderCommand rejectOrderCommand){
+        orderService.rejectOrder(rejectOrderCommand.getOrderId());
     }
 }

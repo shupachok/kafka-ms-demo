@@ -11,8 +11,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -57,7 +55,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void approveOrder(UUID orderId) {
-        OrderEntity order = orderRepository.findById(orderId).get();
+        OrderEntity order = orderRepository.findById(orderId).orElse(null);
         Assert.notNull(order, "Order not found");
 
         order.setStatus(OrderStatus.APPROVED);
@@ -65,6 +63,15 @@ public class OrderServiceImpl implements OrderService {
 
         OrderApprovedEvent orderApprovedEvent = new OrderApprovedEvent(orderId);
         kafkaTemplate.send(ordersEventsTopicName,orderApprovedEvent);
+    }
+
+    @Override
+    public void rejectOrder(UUID orderId) {
+        OrderEntity order = orderRepository.findById(orderId).orElse(null);
+        Assert.notNull(order, "Order not found");
+
+        order.setStatus(OrderStatus.REJECTED);
+        orderRepository.save(order);
     }
 
 }

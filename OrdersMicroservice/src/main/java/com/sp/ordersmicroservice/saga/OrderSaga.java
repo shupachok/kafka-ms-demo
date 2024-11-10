@@ -1,17 +1,10 @@
 package com.sp.ordersmicroservice.saga;
 
-import com.sp.core.dto.command.ApproveOrderCommand;
-import com.sp.core.dto.command.ProcessPaymentCommand;
-import com.sp.core.dto.command.ReserveTicketCommand;
-import com.sp.core.dto.event.OrderApprovedEvent;
-import com.sp.core.dto.event.OrderCreatedEvent;
-import com.sp.core.dto.event.PaymentProcessedEvent;
-import com.sp.core.dto.event.TicketReservedEvent;
+import com.sp.core.dto.command.*;
+import com.sp.core.dto.event.*;
 import com.sp.core.type.OrderStatus;
 import com.sp.ordersmicroservice.service.OrderHistoryService;
-import com.sp.ordersmicroservice.service.OrderService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -71,5 +64,20 @@ public class OrderSaga {
     @KafkaHandler
     public void handler(@Payload OrderApprovedEvent event){
         orderHistoryService.add(event.getOrderId(), OrderStatus.APPROVED);
+    }
+
+    @KafkaHandler
+    public void handler(@Payload PaymentFailedEvent event){
+        CancelTicketReservationCommand cancelTicketReservationCommand = new CancelTicketReservationCommand(event.getTicketId(),
+                event.getOrderId(), event.getTicketQuantity());
+
+        kafkaTemplate.send(ticketCommandsTopicName,cancelTicketReservationCommand);
+    }
+
+    @KafkaHandler
+    public void handler(@Payload TicketReservationCancelledEvent event){
+        RejectOrderCommand rejectOrderCommand = new RejectOrderCommand(event.getOrderId());
+        kafkaTemplate.send(orderCommandsTopicName,rejectOrderCommand);
+        orderHistoryService.add(event.getOrderId(), OrderStatus.REJECTED);
     }
 }

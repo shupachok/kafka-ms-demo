@@ -1,7 +1,9 @@
 package com.sp.tickets.service.handler;
 
 import com.sp.core.dto.Ticket;
+import com.sp.core.dto.command.CancelTicketReservationCommand;
 import com.sp.core.dto.command.ReserveTicketCommand;
+import com.sp.core.dto.event.TicketReservationCancelledEvent;
 import com.sp.core.dto.event.TicketReservationFailedEvent;
 import com.sp.core.dto.event.TicketReservedEvent;
 import com.sp.tickets.service.TicketService;
@@ -55,5 +57,14 @@ public class TicketCommandHandler {
                     command.getTicketId(),command.getOrderId(),command.getTicketQuantity());
             kafkaTemplate.send(ticketEventsTopicName,ticketReservationFailedEvent);
         }
+    }
+
+    @KafkaHandler
+    public void handleCommand(@Payload CancelTicketReservationCommand command){
+        Ticket ticketToCancel = new Ticket(command.getTicketId(), command.getTicketQuantity());
+        ticketService.cancelReservation(ticketToCancel,command.getOrderId());
+
+        TicketReservationCancelledEvent ticketReservationCancelledEvent = new TicketReservationCancelledEvent(command.getTicketId(), command.getOrderId());
+        kafkaTemplate.send(ticketEventsTopicName,ticketReservationCancelledEvent);
     }
 }
